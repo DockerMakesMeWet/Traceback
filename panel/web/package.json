@@ -13,7 +13,7 @@
     "@apollo/experimental-nextjs-app-support": "^0.11.6",
     "graphql": "^16.10.0",
     "graphql-ws": "^5.16.0",
-    "next": "16.2.4",
+    "next": "^15.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
