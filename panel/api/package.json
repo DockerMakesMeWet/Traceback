@@ -12,7 +12,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@apollo/server": "^5.0.0",
+    "@apollo/server": "^4.0.0",
     "@as-integrations/fastify": "^2.1.1",
     "@graphql-tools/schema": "^10.0.8",
     "bcryptjs": "^2.4.3",
