@@ -1,7 +1,8 @@
+# Numeric ID of this server as registered in the Traceback panel
 server-id: 1
 
 redis:
   host: "127.0.0.1"
   port: 6379
-  # Leave blank if no password
+  # Set to your Redis password, or leave blank for no authentication
   password: ""

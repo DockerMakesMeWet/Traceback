@@ -16,10 +16,11 @@ import dev.traceback.gateway.listener.ChatListener;
 import dev.traceback.gateway.listener.CommandListener;
 import org.slf4j.Logger;
 import org.spongepowered.configurate.CommentedConfigurationNode;
-import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.configurate.serialize.SerializationException;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -58,7 +59,6 @@ public class GatewayPlugin {
         ControlPlaneClient controlPlane = new ControlPlaneClient(config, logger);
         informantClient = new InformantClient(proxy, config, logger);
 
-        // Register plugin message channel so Velocity forwards responses from backends
         proxy.getChannelRegistrar().register(InformantClient.CHANNEL);
 
         proxy.getEventManager().register(this, new CommandListener(controlPlane, informantClient, logger));
@@ -72,13 +72,9 @@ public class GatewayPlugin {
         if (!event.getIdentifier().equals(InformantClient.CHANNEL)) return;
         if (!(event.getSource() instanceof ServerConnection)) return;
 
-        // The backend routes the reply through the player's connection.
-        // We intercept it here before it reaches the client.
         event.setResult(PluginMessageEvent.ForwardResult.handled());
 
         if (informantClient != null) {
-            // Extract UUID from the data — the backend echoes the UUID as a prefix.
-            // Format: 36-byte UUID string + '\n' + JSON payload
             byte[] data = event.getData();
             String raw = new String(data, java.nio.charset.StandardCharsets.UTF_8);
             int nl = raw.indexOf('\n');
@@ -101,9 +97,19 @@ public class GatewayPlugin {
         if (!Files.exists(dataDirectory)) {
             Files.createDirectories(dataDirectory);
         }
-        Path configFile = dataDirectory.resolve("config.conf");
 
-        HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
+        Path configFile = dataDirectory.resolve("config.yml");
+
+        // Copy the bundled default config on first run
+        if (!Files.exists(configFile)) {
+            try (InputStream resource = getClass().getResourceAsStream("/config.yml")) {
+                if (resource != null) {
+                    Files.copy(resource, configFile);
+                }
+            }
+        }
+
+        YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
                 .path(configFile)
                 .build();
 
@@ -113,10 +119,6 @@ public class GatewayPlugin {
 
         GatewayConfig cfg = root.get(GatewayConfig.class);
         if (cfg == null) cfg = new GatewayConfig();
-
-        // Persist defaults / comments back to disk
-        root.set(GatewayConfig.class, cfg);
-        loader.save(root);
 
         return cfg;
     }

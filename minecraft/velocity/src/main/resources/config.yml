@@ -1,0 +1,11 @@
+# Base URL of the Traceback panel API
+controlPlaneUrl: "http://localhost:4000"
+
+# Server API key — set this to the key shown after registering the server in the panel
+apiKey: "changeme"
+
+# Numeric ID of this server as registered in the panel
+serverId: 1
+
+# Milliseconds to wait for a location reply from a backend before logging without coordinates
+locationTimeoutMs: 2000

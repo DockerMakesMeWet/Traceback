@@ -14,8 +14,8 @@ dependencies {
     // Guice (provided by Velocity)
     compileOnly("com.google.inject:guice:7.0.0")
 
-    // Configurate HOCON (Velocity ships Configurate core; HOCON loader must be shaded)
-    implementation("org.spongepowered:configurate-hocon:4.1.2")
+    // Configurate YAML (Velocity ships Configurate core; YAML loader + SnakeYAML must be shaded)
+    implementation("org.spongepowered:configurate-yaml:4.1.2")
 
     // JSON
     implementation("com.google.code.gson:gson:2.11.0")
@@ -27,7 +27,7 @@ tasks {
         relocate("com.google.gson", "dev.traceback.gateway.libs.gson")
         relocate("org.spongepowered.configurate", "dev.traceback.gateway.libs.configurate")
         relocate("io.leangen.geantyref", "dev.traceback.gateway.libs.geantyref")
-        relocate("com.typesafe.config", "dev.traceback.gateway.libs.typesafe")
+        relocate("org.yaml.snakeyaml", "dev.traceback.gateway.libs.snakeyaml")
     }
     assemble {
         dependsOn(shadowJar)
