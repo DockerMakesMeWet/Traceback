@@ -1,0 +1,6 @@
+name: traceback-informant
+version: 1.0.0
+main: dev.traceback.informant.InformantPlugin
+api-version: "1.21"
+description: Paper-side component of the Traceback monitoring system
+authors: [Traceback]

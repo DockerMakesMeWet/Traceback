@@ -1,0 +1,30 @@
+# Gradle
+.gradle/
+build/
+out/
+
+# Node
+node_modules/
+.next/
+dist/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+.agents
+.claude

@@ -1,0 +1,9 @@
+{
+  "id": "traceback-gateway",
+  "name": "Traceback Gateway",
+  "version": "1.0.0",
+  "description": "Velocity-side component of the Traceback monitoring system",
+  "authors": ["Traceback"],
+  "main": "dev.traceback.gateway.GatewayPlugin",
+  "dependencies": []
+}
