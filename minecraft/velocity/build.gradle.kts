@@ -21,8 +21,11 @@ dependencies {
     implementation("com.google.code.gson:gson:2.11.0")
 }
 
+version = "1.0.0"
+
 tasks {
     shadowJar {
+        archiveBaseName.set("Traceback-Velocity")
         archiveClassifier.set("")
         relocate("com.google.gson", "dev.traceback.gateway.libs.gson")
         relocate("org.spongepowered.configurate", "dev.traceback.gateway.libs.configurate")

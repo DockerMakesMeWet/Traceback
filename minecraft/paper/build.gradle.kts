@@ -21,8 +21,11 @@ dependencies {
     implementation("com.google.code.gson:gson:2.11.0")
 }
 
+version = "1.0.0"
+
 tasks {
     shadowJar {
+        archiveBaseName.set("Traceback-Paper")
         archiveClassifier.set("")
         relocate("redis.clients.jedis", "dev.traceback.informant.libs.jedis")
         relocate("com.google.gson", "dev.traceback.informant.libs.gson")
