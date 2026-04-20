@@ -30,12 +30,14 @@ public class ControlPlaneClient {
 
     public CompletableFuture<Void> ingestCommand(
             String playerUuid,
+            String playerUsername,
             String command,
             String world,
             double x, double y, double z
     ) {
         JsonObject body = new JsonObject();
         body.addProperty("playerUuid", playerUuid);
+        body.addProperty("playerUsername", playerUsername);
         body.addProperty("serverId", config.getServerId());
         body.addProperty("command", command);
         body.addProperty("world", world);
@@ -48,11 +50,13 @@ public class ControlPlaneClient {
 
     public CompletableFuture<Void> ingestChat(
             String playerUuid,
+            String playerUsername,
             String message,
             String world
     ) {
         JsonObject body = new JsonObject();
         body.addProperty("playerUuid", playerUuid);
+        body.addProperty("playerUsername", playerUsername);
         body.addProperty("serverId", config.getServerId());
         body.addProperty("message", message);
         body.addProperty("world", world);

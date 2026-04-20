@@ -25,8 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Plugin(
-        id = "traceback-gateway",
-        name = "Traceback Gateway",
+        id = "traceback-velocity",
+        name = "Traceback Velocity",
         version = "1.0.0",
         description = "Velocity-side component of the Traceback monitoring system",
         authors = {"Traceback"}
@@ -63,8 +63,6 @@ public class GatewayPlugin {
 
         proxy.getEventManager().register(this, new CommandListener(controlPlane, informantClient, logger));
         proxy.getEventManager().register(this, new ChatListener(controlPlane, informantClient, logger));
-
-        logger.info("Traceback Gateway enabled — control plane: {}", config.getControlPlaneUrl());
     }
 
     @Subscribe
@@ -90,7 +88,6 @@ public class GatewayPlugin {
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
         proxy.getChannelRegistrar().unregister(InformantClient.CHANNEL);
-        logger.info("Traceback Gateway disabled.");
     }
 
     private GatewayConfig loadConfig() throws IOException, SerializationException {
@@ -100,7 +97,6 @@ public class GatewayPlugin {
 
         Path configFile = dataDirectory.resolve("config.yml");
 
-        // Copy the bundled default config on first run
         if (!Files.exists(configFile)) {
             try (InputStream resource = getClass().getResourceAsStream("/config.yml")) {
                 if (resource != null) {
@@ -119,6 +115,15 @@ public class GatewayPlugin {
 
         GatewayConfig cfg = root.get(GatewayConfig.class);
         if (cfg == null) cfg = new GatewayConfig();
+
+        if ("changeme".equals(cfg.getApiKey())) {
+            String newKey = java.util.UUID.randomUUID().toString().replace("-", "");
+            root.node("apiKey").set(String.class, newKey);
+            loader.save(root);
+            cfg = root.get(GatewayConfig.class);
+            if (cfg == null) cfg = new GatewayConfig();
+            logger.info("Generated new API key — copy it from config.yml to the panel.");
+        }
 
         return cfg;
     }

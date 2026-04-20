@@ -141,3 +141,12 @@ export const ChatLog = {
     return row ?? null;
   },
 };
+
+export const ActivityItem = {
+  player: (parent: { player: { uuid: string; username: string } }) => parent.player,
+  server: async (parent: { server: { id: number; name?: string } }) => {
+    if (parent.server.name) return parent.server;
+    const [row] = await db.select().from(servers).where(eq(servers.id, parent.server.id));
+    return row ?? { id: parent.server.id, name: `Server ${parent.server.id}`, enabled: true, createdAt: new Date().toISOString() };
+  },
+};

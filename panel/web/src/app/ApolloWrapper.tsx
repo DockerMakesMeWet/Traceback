@@ -15,6 +15,8 @@ export function ApolloWrapper({ children }: { children: React.ReactNode }) {
     const wsLink = new GraphQLWsLink(
       createClient({
         url: process.env.NEXT_PUBLIC_WS_URL ?? "ws://localhost:4000/graphql-ws",
+        retryAttempts: Infinity,
+        shouldRetry: () => true,
       })
     );
 

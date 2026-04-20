@@ -1,6 +1,6 @@
 {
-  "id": "traceback-gateway",
-  "name": "Traceback Gateway",
+  "id": "traceback-velocity",
+  "name": "Traceback Velocity",
   "version": "1.0.0",
   "description": "Velocity-side component of the Traceback monitoring system",
   "authors": ["Traceback"],

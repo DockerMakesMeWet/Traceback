@@ -23,23 +23,14 @@ public class CommandListener {
     public void onCommand(CommandExecuteEvent event) {
         if (!(event.getCommandSource() instanceof Player player)) return;
 
+        String uuid = player.getUniqueId().toString();
+        String username = player.getUsername();
         String command = "/" + event.getCommand();
 
         informant.requestLocation(player)
-                .thenCompose(loc -> controlPlane.ingestCommand(
-                        player.getUniqueId().toString(),
-                        command,
-                        loc.world(),
-                        loc.x(), loc.y(), loc.z()
-                ))
+                .thenCompose(loc -> controlPlane.ingestCommand(uuid, username, command, loc.world(), loc.x(), loc.y(), loc.z()))
                 .exceptionally(ex -> {
-                    // Location timed out — still log the command without coordinates
-                    controlPlane.ingestCommand(
-                            player.getUniqueId().toString(),
-                            command,
-                            "unknown",
-                            0, 0, 0
-                    );
+                    controlPlane.ingestCommand(uuid, username, command, "unknown", 0, 0, 0);
                     return null;
                 });
     }

@@ -33,9 +33,6 @@ public class InformantPlugin extends JavaPlugin {
         Logger rootLogger = (Logger) LogManager.getRootLogger();
         rootLogger.addAppender(consoleBroadcaster);
 
-        getLogger().info(String.format(
-                "Traceback Informant enabled \u2014 Redis %s:%d, server-id=%d",
-                config.getRedisHost(), config.getRedisPort(), config.getServerId()));
     }
 
     @Override
@@ -49,6 +46,5 @@ public class InformantPlugin extends JavaPlugin {
         getServer().getMessenger().unregisterIncomingPluginChannel(this);
         getServer().getMessenger().unregisterOutgoingPluginChannel(this);
 
-        getLogger().info("Traceback Informant disabled.");
     }
 }

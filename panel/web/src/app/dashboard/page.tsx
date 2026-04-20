@@ -52,22 +52,18 @@ export default function DashboardPage() {
     <div className="p-6">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-lg font-bold">Live Activity Feed</h1>
-        <nav className="flex gap-4 text-sm text-zinc-400">
-          <a href="/dashboard/players" className="hover:text-zinc-100">Players</a>
-          <a href="/dashboard/settings" className="hover:text-zinc-100">Settings</a>
-        </nav>
       </div>
 
       {error && (
-        <p className="mb-4 text-sm text-red-400">
-          Subscription error: {error.message}
-        </p>
+        <div className="mb-4 rounded border border-yellow-800 bg-yellow-900/20 px-4 py-2 text-sm text-yellow-400">
+          Reconnecting…
+        </div>
       )}
 
       <div className="rounded-lg border border-zinc-800 bg-zinc-900">
         {items.length === 0 ? (
           <p className="p-6 text-center text-sm text-zinc-500">
-            Waiting for activity…
+            No activity yet — waiting for events
           </p>
         ) : (
           <ul className="divide-y divide-zinc-800">

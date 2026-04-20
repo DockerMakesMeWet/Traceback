@@ -69,11 +69,8 @@ export default function SettingsPage() {
 
   return (
     <div className="p-6">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4">
         <h1 className="text-lg font-bold">Settings</h1>
-        <a href="/dashboard" className="text-sm text-zinc-400 hover:text-zinc-100">
-          ← Back
-        </a>
       </div>
 
       <div className="space-y-4">

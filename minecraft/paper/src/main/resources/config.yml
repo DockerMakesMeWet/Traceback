@@ -1,4 +1,4 @@
-# Numeric ID of this server as registered in the Traceback panel
+# Numeric ID of this server as registered in the panel
 server-id: 1
 
 redis:

@@ -22,20 +22,14 @@ public class ChatListener {
     @Subscribe
     public void onChat(PlayerChatEvent event) {
         Player player = event.getPlayer();
+        String uuid = player.getUniqueId().toString();
+        String username = player.getUsername();
         String message = event.getMessage();
 
         informant.requestLocation(player)
-                .thenCompose(loc -> controlPlane.ingestChat(
-                        player.getUniqueId().toString(),
-                        message,
-                        loc.world()
-                ))
+                .thenCompose(loc -> controlPlane.ingestChat(uuid, username, message, loc.world()))
                 .exceptionally(ex -> {
-                    controlPlane.ingestChat(
-                            player.getUniqueId().toString(),
-                            message,
-                            "unknown"
-                    );
+                    controlPlane.ingestChat(uuid, username, message, "unknown");
                     return null;
                 });
     }

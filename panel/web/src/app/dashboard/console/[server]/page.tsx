@@ -1,14 +1,15 @@
 "use client";
 
 import { useConsole } from "@/lib/hooks/useConsole";
-import { useEffect, useRef } from "react";
+import { use, useEffect, useRef } from "react";
 
 export default function ConsolePage({
   params,
 }: {
-  params: { server: string };
+  params: Promise<{ server: string }>;
 }) {
-  const serverId = Number(params.server);
+  const { server } = use(params);
+  const serverId = Number(server);
   const { lines, error } = useConsole(serverId);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -17,11 +18,8 @@ export default function ConsolePage({
   }, [lines]);
 
   return (
-    <div className="flex h-screen flex-col p-4">
+    <div className="flex h-full flex-col p-4">
       <div className="mb-2 flex items-center gap-3">
-        <a href="/dashboard" className="text-sm text-zinc-400 hover:text-zinc-100">
-          ← Back
-        </a>
         <h1 className="text-sm font-bold">Console — Server {serverId}</h1>
         {error && (
           <span className="text-xs text-red-400">{error.message}</span>

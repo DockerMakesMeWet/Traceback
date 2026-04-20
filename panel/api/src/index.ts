@@ -9,7 +9,7 @@ import { verifyServerKey } from "./auth/serverKey.js";
 import { db } from "./db/client.js";
 import { chatLogs, commandLogs, players, servers } from "./db/schema.js";
 import { typeDefs } from "./graphql/schema.js";
-import { ChatLog, CommandLog, Query, Server } from "./graphql/resolvers/query.js";
+import { ActivityItem, ChatLog, CommandLog, Query, Server } from "./graphql/resolvers/query.js";
 import { Mutation } from "./graphql/resolvers/mutation.js";
 import { Subscription } from "./graphql/resolvers/subscription.js";
 import { publisher } from "./redis.js";
@@ -19,7 +19,7 @@ const PORT = Number(process.env.PORT ?? 4000);
 
 const schema = makeExecutableSchema({
   typeDefs,
-  resolvers: { Query, Mutation, Subscription, Server, CommandLog, ChatLog },
+  resolvers: { Query, Mutation, Subscription, Server, CommandLog, ChatLog, ActivityItem },
 });
 
 async function bootstrap() {
@@ -41,6 +41,7 @@ async function bootstrap() {
   // --- REST ingest endpoints ---
   const CommandBody = z.object({
     playerUuid: z.string().uuid(),
+    playerUsername: z.string().max(32).optional(),
     serverId: z.number().int(),
     command: z.string().max(512),
     world: z.string(),
@@ -51,6 +52,7 @@ async function bootstrap() {
 
   const ChatBody = z.object({
     playerUuid: z.string().uuid(),
+    playerUsername: z.string().max(32).optional(),
     serverId: z.number().int(),
     message: z.string().max(2048),
     world: z.string(),
@@ -61,7 +63,7 @@ async function bootstrap() {
     if (!body.success) return reply.status(400).send({ error: body.error.flatten() });
     const d = body.data;
 
-    await upsertPlayer(d.playerUuid);
+    await upsertPlayer(d.playerUuid, d.playerUsername);
     const [row] = await db.insert(commandLogs).values({
       playerUuid: d.playerUuid,
       serverId: d.serverId,
@@ -72,7 +74,7 @@ async function bootstrap() {
       command: d.command,
     }).returning();
 
-    await publishActivity("command", row, d.playerUuid, d.serverId, d.world, d.command);
+    await publishActivity("command", row, d.playerUuid, d.playerUsername ?? d.playerUuid, d.serverId, d.world, d.command);
     return reply.status(201).send({ id: row.id });
   });
 
@@ -81,7 +83,7 @@ async function bootstrap() {
     if (!body.success) return reply.status(400).send({ error: body.error.flatten() });
     const d = body.data;
 
-    await upsertPlayer(d.playerUuid);
+    await upsertPlayer(d.playerUuid, d.playerUsername);
     const [row] = await db.insert(chatLogs).values({
       playerUuid: d.playerUuid,
       serverId: d.serverId,
@@ -89,7 +91,7 @@ async function bootstrap() {
       message: d.message,
     }).returning();
 
-    await publishActivity("chat", row, d.playerUuid, d.serverId, d.world, d.message);
+    await publishActivity("chat", row, d.playerUuid, d.playerUsername ?? d.playerUuid, d.serverId, d.world, d.message);
     return reply.status(201).send({ id: row.id });
   });
 
@@ -122,12 +124,14 @@ async function bootstrap() {
   });
 }
 
-async function upsertPlayer(uuid: string) {
+async function upsertPlayer(uuid: string, username?: string) {
   const [existing] = await db.select().from(players).where(eq(players.uuid, uuid));
   if (existing) {
-    await db.update(players).set({ lastSeen: new Date() }).where(eq(players.uuid, uuid));
+    await db.update(players)
+      .set({ lastSeen: new Date(), ...(username ? { username } : {}) })
+      .where(eq(players.uuid, uuid));
   } else {
-    await db.insert(players).values({ uuid, username: uuid }).onConflictDoNothing();
+    await db.insert(players).values({ uuid, username: username ?? uuid }).onConflictDoNothing();
   }
 }
 
@@ -135,6 +139,7 @@ async function publishActivity(
   type: string,
   row: { id: number },
   playerUuid: string,
+  playerUsername: string,
   serverId: number,
   world: string,
   content: string
@@ -142,7 +147,7 @@ async function publishActivity(
   const item = {
     type,
     id: row.id,
-    player: { uuid: playerUuid },
+    player: { uuid: playerUuid, username: playerUsername },
     server: { id: serverId },
     world,
     content,

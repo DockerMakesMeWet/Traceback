@@ -1,5 +1,5 @@
-# Base URL of the Traceback panel API
-controlPlaneUrl: "http://localhost:4000"
+# Base API URL
+controlPlaneUrl: "https://traceback-api.wildowl.tech"
 
 # Server API key — set this to the key shown after registering the server in the panel
 apiKey: "changeme"
@@ -9,3 +9,8 @@ serverId: 1
 
 # Milliseconds to wait for a location reply from a backend before logging without coordinates
 locationTimeoutMs: 2000
+
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  password: ""
